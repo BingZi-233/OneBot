@@ -310,17 +310,12 @@ onebot:
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 提交 Pull Request
 
-## 🎉 更新日志
+## 🙏 致谢
 
-### v1.0.0
-- ✨ 初始版本发布
-- ✅ 完整的 OneBot v11 协议支持
-- ✅ 灵活的URL配置系统
-- ✅ 预设配置支持
-- ✅ 完整的事件系统
-- ✅ WebSocket 连接管理
-- ✅ 命令行管理界面
-- ✅ 公共API接口
+- [cnlimiter/onebot-client](https://github.com/cnlimiter/onebot-client) - 本项目基于该项目重新设计和实现
+- [TabooLib](https://github.com/TabooLib/taboolib) - 强大的 Minecraft 插件开发框架
+- [OneBot](https://onebot.dev/) - 聊天机器人应用接口标准
+- 所有贡献者和使用者
 
 ---
 

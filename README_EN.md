@@ -222,6 +222,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+- [cnlimiter/onebot-client](https://github.com/cnlimiter/onebot-client) - This project is redesigned and reimplemented based on this project
 - [TabooLib](https://github.com/TabooLib/taboolib) - The powerful framework this plugin is built on
 - [OneBot](https://onebot.dev/) - The chat protocol standard
 - All contributors and users of this plugin
