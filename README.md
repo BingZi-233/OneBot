@@ -1,6 +1,20 @@
-# OneBot Minecraft 插件
+# OneBot
+
+<div align="center">
+
+![OneBot](https://img.shields.io/badge/OneBot-v11%2Fv12-blue)
+![TabooLib](https://img.shields.io/badge/TabooLib-6.2.3+-green)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.8--1.21+-orange)
+![Java](https://img.shields.io/badge/Java-8+-red)
+![Build Status](https://img.shields.io/github/actions/workflow/status/BingZi-233/OneBot/build.yml)
+![License](https://img.shields.io/github/license/BingZi-233/OneBot)
+![Downloads](https://img.shields.io/github/downloads/BingZi-233/OneBot/total)
 
 一个基于 TabooLib 框架开发的 Minecraft OneBot 协议插件，用于连接 QQ 机器人和 Minecraft 服务器。
+
+**中文文档** | [English](./README_EN.md) | [Wiki](https://github.com/BingZi-233/OneBot/wiki) | [Issues](https://github.com/BingZi-233/OneBot/issues)
+
+</div>
 
 ## 🌟 功能特性
 
