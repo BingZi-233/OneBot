@@ -1,0 +1,66 @@
+# OneBot 插件配置文件
+
+# OneBot 服务器连接配置
+onebot:
+  # WebSocket 服务器地址
+  url: "ws://localhost:8080"
+  # 验证 Token（可选）
+  token: ""
+  # 机器人 QQ 号（仅在 Mirai 模式下需要）
+  bot_id: 0
+  # 是否为 Mirai 模式
+  mirai: false
+  # 自定义连接路径（可选，如果设置则会覆盖默认路径）
+  custom_path: ""
+  # 额外的 URL 参数（可选）
+  extra_params: {}
+  # 自定义请求头（可选）
+  headers: {}
+  # 重连间隔（秒）
+  reconnect_interval: 5
+  # 最大重连尝试次数
+  max_reconnect_attempts: -1
+  # 连接超时时间（毫秒）
+  connect_timeout: 10000
+
+# 事件处理配置
+events:
+  # 是否启用事件处理
+  enabled: true
+  # 事件处理线程池大小
+  thread_pool_size: 4
+
+# 调试配置
+debug:
+  # 是否启用调试模式
+  enabled: false
+  # 是否记录原始消息
+  log_raw_messages: false
+  # 是否记录发送的动作
+  log_actions: false
+
+# 预设配置模板（便于快速配置常见Bot）
+presets:
+  # go-cqhttp 配置示例
+  go-cqhttp:
+    url: "ws://localhost:5700"
+    path: ""
+    headers: {}
+  # mirai-api-http 配置示例  
+  mirai:
+    url: "ws://localhost:8080"
+    path: "/all"
+    params:
+      verifyKey: "your-verify-key"
+      qq: "your-bot-qq"
+    headers: {}
+  # NoneBot2 配置示例
+  nonebot2:
+    url: "ws://localhost:8080"
+    path: "/onebot/v11/ws"
+    headers: {}
+  # LLOneBot 配置示例
+  llonebot:
+    url: "ws://localhost:3001"
+    path: ""
+    headers: {}

@@ -1,0 +1,123 @@
+# OneBot Plugin English Language File
+
+# Startup banner
+plugin-banner: |-
+  
+  &a ╔════════════════════════════════════════╗
+  &a ║              OneBot v{0}               ║
+  &a ║        Minecraft OneBot Protocol       ║
+  &a ║              Plugin Enabled            ║
+  &a ╚════════════════════════════════════════╝
+  
+
+# Basic messages
+loading-config: "&e[OneBot] Loading configuration file..."
+warning-no-url: "&c[OneBot] Warning: OneBot server URL not configured, please check configuration file"
+starting-connection: "&a[OneBot] Starting OneBot connection..."
+events-disabled: "&e[OneBot] Event handling is disabled, skipping connection startup"
+plugin-started: "&a[OneBot] Plugin started successfully!"
+plugin-stopping: "&e[OneBot] Stopping plugin..."
+plugin-stopped: "&a[OneBot] Plugin stopped"
+
+# Manager messages
+connection-exists: "&e[OneBot] Connection already exists, no need to restart"
+connection-starting: "&a[OneBot] Starting connection..."
+connection-started: "&a[OneBot] Connection started successfully"
+connection-failed: "&c[OneBot] Connection startup failed: {0}"
+startup-error: "&c[OneBot] Error occurred during startup: {0}"
+connection-stopping: "&e[OneBot] Stopping connection..."
+connection-stopped: "&a[OneBot] Connection stopped"
+stop-error: "&c[OneBot] Error occurred while stopping connection: {0}"
+connection-restarting: "&e[OneBot] Restarting connection..."
+
+# WebSocket messages
+connection-established: "&a[OneBot] WebSocket connection established"
+websocket-closed: "&e[OneBot] WebSocket connection closed (code: {0}, reason: {1})"
+websocket-error: "&c[OneBot] WebSocket error occurred: {0}"
+websocket-not-connected: "&c[OneBot] WebSocket not connected, cannot send action"
+message-processing-error: "&c[OneBot] Error occurred while processing message: {0}"
+message-parsing-error: "&c[OneBot] Error occurred while parsing message: {0}"
+action-send-error: "&c[OneBot] Error occurred while sending action: {0}"
+
+# Reconnect messages
+max-reconnect-attempts-reached: "&c[OneBot] Maximum reconnect attempts reached, stopping reconnection"
+attempting-reconnect: "&e[OneBot] Attempting reconnection ({0}/{1})"
+reconnect-failed: "&c[OneBot] Reconnection failed: {0}"
+
+# Connection status
+status-uninitialized: "Uninitialized"
+status-connected: "Connected"
+status-disconnected: "Disconnected"
+
+# Command messages
+command-connecting: "&a[OneBot] Connecting..."
+command-disconnecting: "&e[OneBot] Disconnecting..."
+command-restarting: "&e[OneBot] Restarting connection..."
+command-reloading: "&a[OneBot] Reloading configuration file..."
+command-reloaded: "&a[OneBot] Configuration file reloaded"
+preset-list: "&a[OneBot] Available preset configurations:"
+preset-none: "&7  (none)"
+preset-applied: "&a[OneBot] Applied preset configuration: {0}"
+preset-restart-reminder: "&e[OneBot] Please use /onebot restart to restart the connection for the configuration to take effect"
+preset-not-found: "&c[OneBot] Preset configuration does not exist or application failed: {0}"
+
+# Test commands
+input-qq-number: "Please enter QQ number"
+test-message: "Test message"
+invalid-qq: "&c[OneBot] Invalid QQ number"
+private-message-success: "&a[OneBot] Private message sent successfully"
+private-message-failed: "&c[OneBot] Private message sending failed"
+input-group-number: "Please enter group number"
+invalid-group: "&c[OneBot] Invalid group number"
+group-message-success: "&a[OneBot] Group message sent successfully"
+group-message-failed: "&c[OneBot] Group message sending failed"
+
+# Help information
+command-help: |-
+  
+  &a ════════════ OneBot Plugin Commands ════════════
+  
+  &e /onebot help &7- Show this help information
+  &e /onebot status &7- Show connection status
+  &e /onebot connect &7- Connect to OneBot server
+  &e /onebot disconnect &7- Disconnect
+  &e /onebot restart &7- Restart connection
+  &e /onebot reload &7- Reload configuration file
+  &e /onebot preset list &7- Show available preset configurations
+  &e /onebot preset apply <name> &7- Apply preset configuration
+  &e /onebot test private <QQ> [message] &7- Send test private message
+  &e /onebot test group <group> [message] &7- Send test group message
+  
+  &a ══════════════════════════════════════
+  
+
+# Status information header
+status-header: |-
+  
+  &a ════════════ OneBot Status Information ════════════
+  
+
+status-footer: |-
+  
+  &a ══════════════════════════════════════
+  
+
+# Status display items
+status-connection: "&e Connection Status: &f{0}"
+status-base-url: "&e Base URL: &f{0}"
+status-full-url: "&e Full URL: &f{0}"
+status-is-connected: "&e Is Connected: &f{0}"
+status-events-enabled: "&e Event Handling: &f{0}"
+status-debug-mode: "&e Debug Mode: &f{0}"
+status-custom-path: "&e Custom Path: &f{0}"
+status-mirai-mode: "&e Mirai Mode: &f{0}"
+status-custom-headers: "&e Custom Headers:"
+status-header-item: "&7   {0}: {1}"
+status-header-hidden: "&7[Hidden]"
+status-no-custom-path: "&7(none)"
+
+# Status values
+status-enabled: "&aEnabled"
+status-disabled: "&cDisabled"
+status-yes: "&aYes"
+status-no: "&cNo"
