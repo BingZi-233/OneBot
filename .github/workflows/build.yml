@@ -36,11 +36,22 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           
+      - name: 📦 缓存 Gradle 依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/kotlin-dsl
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+          
       - name: 🐘 配置 Gradle 构建工具
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
+          cache-read-only: false
           
       - name: 🏷️ 解析版本信息
         id: version
@@ -131,10 +142,23 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
           
+      - name: 📦 缓存 Gradle 依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/kotlin-dsl
+          key: ${{ runner.os }}-gradle-maven-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-maven-
+            ${{ runner.os }}-gradle-
+          
       - name: 🐘 配置 Gradle 构建工具
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
+          cache-read-only: true
           
       - name: 🚀 推送到 Maven 仓库
         env:
