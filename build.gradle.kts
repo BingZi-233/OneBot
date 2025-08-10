@@ -13,6 +13,7 @@ plugins {
 taboolib {
     env {
         install(Bukkit)
+        install(BukkitUtil)
         install(Basic)
         install(I18n)
         install(Metrics)

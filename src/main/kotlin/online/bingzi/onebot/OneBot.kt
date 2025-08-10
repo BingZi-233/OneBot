@@ -2,12 +2,15 @@ package online.bingzi.onebot
 
 import online.bingzi.onebot.config.OneBotConfig
 import online.bingzi.onebot.manager.OneBotManager
+import taboolib.common.platform.Platform
 import taboolib.common.platform.Plugin
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.pluginVersion
 import taboolib.module.lang.asLangText
 import taboolib.module.lang.sendInfo
 import taboolib.module.lang.sendWarn
+import taboolib.module.metrics.Metrics
+import taboolib.platform.util.bukkitPlugin
 
 
 object OneBot : Plugin() {
@@ -31,6 +34,9 @@ object OneBot : Plugin() {
         } else {
             console().sendInfo("events-disabled")
         }
+
+        // 初始化Metrics以收集插件的使用统计信息
+        Metrics(26854, bukkitPlugin.description.version, Platform.BUKKIT)
 
         console().sendInfo("plugin-started")
     }
