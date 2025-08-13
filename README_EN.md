@@ -22,6 +22,7 @@ A powerful Minecraft server plugin that bridges OneBot protocol implementations 
 - 🎮 **Wide Compatibility** - Works with Minecraft 1.8-1.21+ servers
 - 🚀 **High Performance** - Built on TabooLib framework for optimal performance
 - 🔧 **Easy Configuration** - Pre-configured templates for popular OneBot implementations
+- ⚡ **Fully Async APIs** - All API calls use async callback patterns to prevent main thread blocking
 - 📊 **Metrics Integration** - Built-in bStats metrics for usage analytics
 - 🌍 **Internationalization** - Multi-language support with i18n
 - 🔄 **Real-time Sync** - Bidirectional message forwarding between game and chat platforms
