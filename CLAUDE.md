@@ -74,9 +74,9 @@ online.bingzi.onebot
 ├── event/                      # 事件系统
 │   ├── EventFactory.kt         # 事件工厂，解析和分发事件
 │   ├── base/OneBotEvent.kt     # 事件基类
-│   ├── message/MessageEvents.kt # 消息事件（私聊/群聊）
-│   ├── notice/NoticeEvents.kt   # 通知事件（群成员变化等）
-│   └── request/RequestEvents.kt # 请求事件（好友/群请求）
+│   ├── message/MessageEvent.kt # 消息事件（私聊/群聊）
+│   ├── notice/NoticeEvent.kt   # 通知事件（群成员变化等）
+│   └── request/RequestEvent.kt # 请求事件（好友/群请求）
 └── command/OneBotCommand.kt    # 管理命令实现
 ```
 

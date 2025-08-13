@@ -1,7 +1,6 @@
 package online.bingzi.onebot.event
 
 import com.google.gson.JsonObject
-import online.bingzi.onebot.config.OneBotConfig
 import online.bingzi.onebot.event.base.OneBotEvent
 import online.bingzi.onebot.event.message.GroupMessageEvent
 import online.bingzi.onebot.event.message.PrivateMessageEvent
@@ -76,7 +75,7 @@ class EventFactory {
         val subType = json.get("sub_type")?.asString ?: ""
         val messageId = json.get("message_id")?.asInt ?: 0
         val userId = json.get("user_id")?.asLong ?: 0L
-        
+
         // 处理 message 字段，可能是字符串或数组
         val messageElement = json.get("message")
         val message = when {
@@ -85,7 +84,7 @@ class EventFactory {
             messageElement.isJsonArray -> messageElement.toString() // 将消息段数组转换为JSON字符串
             else -> messageElement.toString()
         }
-        
+
         val font = json.get("font")?.asInt ?: 0
 
         return when (messageType) {

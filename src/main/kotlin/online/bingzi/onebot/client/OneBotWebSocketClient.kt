@@ -31,7 +31,7 @@ class OneBotWebSocketClient(
         customHeaders.forEach { (key, value) ->
             addHeader(key, value)
         }
-        
+
         // 设置连接超时
         connectionLostTimeout = OneBotConfig.connectTimeout
     }

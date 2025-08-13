@@ -39,7 +39,7 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
         pendingActions[echo] = future
 
         // 设置超时 (Java 8 兼容方式)
-        val timeoutFuture = CompletableFuture<JsonObject>()
+        CompletableFuture<JsonObject>()
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
@@ -50,9 +50,9 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
             }
         }, 10000) // 10秒超时
 
-        future.whenComplete { _, _ -> 
+        future.whenComplete { _, _ ->
             timer.cancel()
-            pendingActions.remove(echo) 
+            pendingActions.remove(echo)
         }
 
         if (currentClient.sendAction(action, params, echo)) {

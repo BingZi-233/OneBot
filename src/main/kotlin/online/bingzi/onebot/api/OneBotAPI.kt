@@ -4,8 +4,8 @@ import online.bingzi.onebot.action.ActionFactory
 import online.bingzi.onebot.client.OneBotWebSocketClient
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
-import taboolib.module.lang.sendInfo
 import taboolib.module.lang.sendError
+import taboolib.module.lang.sendInfo
 
 /**
  * OneBot API 接口

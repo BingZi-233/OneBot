@@ -182,7 +182,7 @@ object OneBotCommand {
 
     private fun showStatus(sender: ProxyCommandSender) {
         sender.sendMessage(sender.asLangText("status-header"))
-        
+
         sender.sendLang("status-connection", OneBotManager.getStatus())
         sender.sendLang("status-base-url", OneBotConfig.url)
         sender.sendLang("status-full-url", OneBotManager.getCurrentUrl())
@@ -191,7 +191,7 @@ object OneBotCommand {
         sender.sendLang("status-debug-mode", if (OneBotConfig.debugEnabled) sender.asLangText("status-enabled") else sender.asLangText("status-disabled"))
         sender.sendLang("status-custom-path", OneBotConfig.customPath.ifEmpty { sender.asLangText("status-no-custom-path") })
         sender.sendLang("status-mirai-mode", if (OneBotConfig.isMirai) sender.asLangText("status-yes") else sender.asLangText("status-no"))
-        
+
         val customHeaders = OneBotConfig.getCustomHeaders()
         if (customHeaders.isNotEmpty()) {
             sender.sendInfo("status-custom-headers")
@@ -202,7 +202,7 @@ object OneBotCommand {
                 sender.sendMessage("§7   $key: $displayValue")
             }
         }
-        
+
         sender.sendMessage(sender.asLangText("status-footer"))
     }
 }
