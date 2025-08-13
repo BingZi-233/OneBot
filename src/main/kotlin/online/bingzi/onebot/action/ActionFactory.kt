@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import online.bingzi.onebot.client.OneBotWebSocketClient
 import online.bingzi.onebot.config.OneBotConfig
 import taboolib.common.platform.function.console
+import taboolib.module.lang.sendWarn
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -56,7 +57,7 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
 
         if (currentClient.sendAction(action, params, echo)) {
             if (OneBotConfig.debugEnabled) {
-                console().sendMessage("§7[OneBot] 发送动作: $action (echo: $echo)")
+                console().sendWarn("actionSent", action, echo)
             }
         } else {
             future.completeExceptionally(RuntimeException("发送动作失败"))
@@ -73,7 +74,7 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
         val future = pendingActions.remove(echo) ?: return
 
         if (OneBotConfig.debugEnabled) {
-            console().sendMessage("§7[OneBot] 收到响应: $echo")
+            console().sendWarn("responseReceived", echo)
         }
 
         val retCode = json.get("retcode")?.asInt ?: -1

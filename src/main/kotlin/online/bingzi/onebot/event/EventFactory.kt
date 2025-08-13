@@ -1,6 +1,7 @@
 package online.bingzi.onebot.event
 
 import com.google.gson.JsonObject
+import online.bingzi.onebot.config.OneBotConfig
 import online.bingzi.onebot.event.base.OneBotEvent
 import online.bingzi.onebot.event.message.GroupMessageEvent
 import online.bingzi.onebot.event.message.PrivateMessageEvent
@@ -12,6 +13,8 @@ import online.bingzi.onebot.event.request.FriendRequestEvent
 import online.bingzi.onebot.event.request.GroupRequestEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
+import taboolib.module.lang.sendError
+import taboolib.module.lang.sendWarn
 
 /**
  * 事件工厂，用于将 OneBot 消息转换为对应的事件
@@ -32,16 +35,16 @@ class EventFactory {
                     try {
                         event.call()
                     } catch (e: Exception) {
-                        console().sendMessage("§c[OneBot] 事件处理时发生错误: ${e.message}")
+                        console().sendError("eventProcessingError", e.message ?: "Unknown error")
                         if (jsonObject.has("post_type")) {
-                            console().sendMessage("§7[OneBot] 事件类型: ${jsonObject.get("post_type").asString}")
+                            console().sendWarn("eventTypeDebug", jsonObject.get("post_type").asString)
                         }
                         e.printStackTrace()
                     }
                 }
             }
         } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 创建事件时发生错误: ${e.message}")
+            console().sendError("eventCreationError", e.message ?: "Unknown error")
             e.printStackTrace()
         }
     }

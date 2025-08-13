@@ -4,6 +4,8 @@ import online.bingzi.onebot.action.ActionFactory
 import online.bingzi.onebot.client.OneBotWebSocketClient
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
+import taboolib.module.lang.sendInfo
+import taboolib.module.lang.sendError
 
 /**
  * OneBot API 接口
@@ -20,7 +22,7 @@ object OneBotAPI {
     internal fun initialize(actionFactory: ActionFactory, client: OneBotWebSocketClient) {
         this.actionFactory = actionFactory
         this.client = client
-        console().sendMessage("§a[OneBot] API 已初始化")
+        console().sendInfo("apiInitialized")
     }
 
     /**
@@ -41,7 +43,7 @@ object OneBotAPI {
         actionFactory?.sendPrivateMsg(userId, message, autoEscape)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 发送私聊消息失败: ${throwable.message}")
+                    console().sendError("sendPrivateMessageFailed", throwable.message ?: "Unknown error")
                     callback(false)
                 } else {
                     callback(result != null)
@@ -61,7 +63,7 @@ object OneBotAPI {
         actionFactory?.sendGroupMsg(groupId, message, autoEscape)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 发送群消息失败: ${throwable.message}")
+                    console().sendError("sendGroupMessageFailed", throwable.message ?: "Unknown error")
                     callback(false)
                 } else {
                     callback(result != null)
@@ -79,7 +81,7 @@ object OneBotAPI {
         actionFactory?.deleteMsg(messageId)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 撤回消息失败: ${throwable.message}")
+                    console().sendError("deleteMessageFailed", throwable.message ?: "Unknown error")
                     callback(false)
                 } else {
                     callback(result != null)
@@ -99,7 +101,7 @@ object OneBotAPI {
         actionFactory?.setGroupBan(groupId, userId, duration)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 禁言群成员失败: ${throwable.message}")
+                    console().sendError("banGroupMemberFailed", throwable.message ?: "Unknown error")
                     callback(false)
                 } else {
                     callback(result != null)
@@ -119,7 +121,7 @@ object OneBotAPI {
         actionFactory?.setGroupKick(groupId, userId, rejectAddRequest)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 踢出群成员失败: ${throwable.message}")
+                    console().sendError("kickGroupMemberFailed", throwable.message ?: "Unknown error")
                     callback(false)
                 } else {
                     callback(result != null)
@@ -136,7 +138,7 @@ object OneBotAPI {
         actionFactory?.getFriendList()?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 获取好友列表失败: ${throwable.message}")
+                    console().sendError("getFriendListFailed", throwable.message ?: "Unknown error")
                     callback(null)
                 } else {
                     callback(result?.toString())
@@ -153,7 +155,7 @@ object OneBotAPI {
         actionFactory?.getGroupList()?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 获取群列表失败: ${throwable.message}")
+                    console().sendError("getGroupListFailed", throwable.message ?: "Unknown error")
                     callback(null)
                 } else {
                     callback(result?.toString())
@@ -171,7 +173,7 @@ object OneBotAPI {
         actionFactory?.getGroupMemberList(groupId)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
-                    console().sendMessage("§c[OneBot] 获取群成员列表失败: ${throwable.message}")
+                    console().sendError("getGroupMemberListFailed", throwable.message ?: "Unknown error")
                     callback(null)
                 } else {
                     callback(result?.toString())

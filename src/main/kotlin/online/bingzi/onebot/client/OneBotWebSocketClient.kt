@@ -41,13 +41,13 @@ class OneBotWebSocketClient(
         reconnectAttempts = 0
 
         if (OneBotConfig.debugEnabled) {
-            console().sendMessage("§7[OneBot] 握手信息: ${handshake.httpStatusMessage}")
+            console().sendWarn("handshakeInfo", handshake.httpStatusMessage)
         }
     }
 
     override fun onMessage(message: String) {
         if (OneBotConfig.logRawMessages) {
-            console().sendMessage("§7[OneBot] 收到消息: $message")
+            console().sendWarn("receivedMessage", message)
         }
 
         try {
@@ -114,7 +114,7 @@ class OneBotWebSocketClient(
         }
 
         if (OneBotConfig.logActions) {
-            console().sendMessage("§7[OneBot] 发送动作: ${request}")
+            console().sendWarn("sendingAction", request.toString())
         }
 
         try {

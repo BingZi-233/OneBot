@@ -4,6 +4,8 @@ import taboolib.common.platform.function.console
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigNode
 import taboolib.module.configuration.Configuration
+import taboolib.module.lang.sendInfo
+import taboolib.module.lang.sendError
 import java.net.URLEncoder
 
 object OneBotConfig {
@@ -51,7 +53,7 @@ object OneBotConfig {
     var logActions: Boolean = false
     
     fun reload() {
-        console().sendMessage("§a[OneBot] 配置文件已重新加载")
+        console().sendInfo("configReloaded")
     }
     
     /**
@@ -160,10 +162,10 @@ object OneBotConfig {
                 }
             }
             
-            console().sendMessage("§a[OneBot] 已应用预设配置: $presetName")
+            console().sendInfo("presetConfigApplied", presetName)
             return true
         } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 应用预设配置失败: ${e.message}")
+            console().sendError("presetConfigFailed", e.message ?: "Unknown error")
             return false
         }
     }
