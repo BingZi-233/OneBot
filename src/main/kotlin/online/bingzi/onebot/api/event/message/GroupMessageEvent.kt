@@ -4,7 +4,7 @@ import online.bingzi.onebot.api.OneBotAPI
 
 /**
  * 群消息事件
- * 
+ *
  * 当机器人收到群消息时触发此事件
  * 其他插件可以监听此事件来处理群消息
  */
@@ -22,12 +22,16 @@ class GroupMessageEvent(
 ) : MessageEvent(time, selfId, rawData, "group", subType, messageId, userId, message, font) {
 
     override fun reply(message: String, autoEscape: Boolean) {
-        OneBotAPI.sendGroupMessage(groupId, message, autoEscape)
+        OneBotAPI.sendGroupMessage(groupId, message, autoEscape) {
+
+        }
     }
 
     override fun replyWithQuote(message: String, autoEscape: Boolean) {
         val quotedMessage = "[CQ:reply,id=$messageId]$message"
-        OneBotAPI.sendGroupMessage(groupId, quotedMessage, autoEscape)
+        OneBotAPI.sendGroupMessage(groupId, quotedMessage, autoEscape) {
+
+        }
     }
 
     /**
@@ -35,6 +39,8 @@ class GroupMessageEvent(
      */
     fun replyWithAt(message: String, autoEscape: Boolean = false) {
         val atMessage = "[CQ:at,qq=$userId] $message"
-        OneBotAPI.sendGroupMessage(groupId, atMessage, autoEscape)
+        OneBotAPI.sendGroupMessage(groupId, atMessage, autoEscape) {
+
+        }
     }
 }
