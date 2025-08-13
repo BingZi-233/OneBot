@@ -74,9 +74,20 @@ online.bingzi.onebot
 ├── event/                      # 事件系统
 │   ├── EventFactory.kt         # 事件工厂，解析和分发事件
 │   ├── base/OneBotEvent.kt     # 事件基类
-│   ├── message/MessageEvent.kt # 消息事件（私聊/群聊）
-│   ├── notice/NoticeEvent.kt   # 通知事件（群成员变化等）
-│   └── request/RequestEvent.kt # 请求事件（好友/群请求）
+│   ├── message/                # 消息事件包
+│   │   ├── MessageEvent.kt     # 消息事件基类
+│   │   ├── PrivateMessageEvent.kt  # 私聊消息事件
+│   │   └── GroupMessageEvent.kt    # 群消息事件
+│   ├── notice/                 # 通知事件包
+│   │   ├── NoticeEvent.kt      # 通知事件基类
+│   │   ├── GroupIncreaseNotice.kt  # 群成员增加通知
+│   │   ├── GroupDecreaseNotice.kt  # 群成员减少通知
+│   │   ├── GroupBanNotice.kt   # 群禁言通知
+│   │   └── FriendAddNotice.kt  # 好友添加通知
+│   └── request/                # 请求事件包
+│       ├── RequestEvent.kt     # 请求事件基类
+│       ├── FriendRequestEvent.kt   # 好友请求事件
+│       └── GroupRequestEvent.kt    # 群请求事件
 └── command/OneBotCommand.kt    # 管理命令实现
 ```
 
@@ -108,17 +119,30 @@ online.bingzi.onebot
 ### 事件系统设计
 
 1. **事件继承结构**:
-   - `OneBotEvent` (基类) → 具体事件类
+   - `OneBotEvent` (基类) → 具体事件类型的基类 → 具体事件实现
    - 所有事件都可通过 `SubscribeEvent` 监听
 
-2. **事件分类**:
-   - **Message**: `PrivateMessageEvent`, `GroupMessageEvent`
-   - **Notice**: `GroupIncreaseNotice`, `GroupBanNotice` 等
-   - **Request**: `FriendRequestEvent`, `GroupRequestEvent`
+2. **事件包结构**:
+   - **message**: 消息事件包
+     - `MessageEvent` - 消息事件基类
+     - `PrivateMessageEvent` - 私聊消息事件
+     - `GroupMessageEvent` - 群消息事件
+   - **notice**: 通知事件包
+     - `NoticeEvent` - 通知事件基类
+     - `GroupIncreaseNotice` - 群成员增加通知
+     - `GroupDecreaseNotice` - 群成员减少通知
+     - `GroupBanNotice` - 群禁言通知
+     - `FriendAddNotice` - 好友添加通知
+   - **request**: 请求事件包
+     - `RequestEvent` - 请求事件基类
+     - `FriendRequestEvent` - 好友请求事件
+     - `GroupRequestEvent` - 群请求事件
 
 3. **事件处理机制**:
    - EventFactory 负责解析 JSON 并创建事件对象
+   - 根据事件类型路由到对应的事件包
    - 通过 TabooLib 事件系统分发到各个监听器
+   - 支持事件响应方法（reply、replyWithAt等）
 
 ### 配置系统特性
 
