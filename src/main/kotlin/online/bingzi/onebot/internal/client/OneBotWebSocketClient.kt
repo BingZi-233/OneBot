@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import online.bingzi.onebot.internal.action.ActionFactory
 import online.bingzi.onebot.internal.config.OneBotConfig
 import online.bingzi.onebot.internal.event.EventFactory
+import online.bingzi.onebot.internal.event.StatusEventFactory
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import taboolib.common.platform.function.console
@@ -21,7 +22,8 @@ import java.net.URI
  */
 class OneBotWebSocketClient(
     private val eventFactory: EventFactory,
-    private val actionFactory: ActionFactory
+    private val actionFactory: ActionFactory,
+    private val statusEventFactory: StatusEventFactory
 ) : WebSocketClient(URI.create(OneBotConfig.getWebSocketUrl())) {
 
     private var reconnectAttempts = 0
@@ -45,6 +47,9 @@ class OneBotWebSocketClient(
         if (OneBotConfig.debugEnabled) {
             console().sendWarn("handshakeInfo", handshake.httpStatusMessage)
         }
+
+        // 触发连接成功事件
+        statusEventFactory.fireConnectedEvent(OneBotConfig.getWebSocketUrl(), reconnectCount = reconnectAttempts)
     }
 
     override fun onMessage(message: String) {
@@ -83,6 +88,14 @@ class OneBotWebSocketClient(
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         console().sendWarn("websocket-closed", code.toString(), reason)
+
+        // 触发连接断开事件
+        statusEventFactory.fireDisconnectedEvent(
+            serverUrl = OneBotConfig.getWebSocketUrl(),
+            reason = reason,
+            isNormalClose = isManualClose,
+            closeCode = code
+        )
 
         if (!isManualClose && OneBotConfig.maxReconnectAttempts != 0) {
             attemptReconnect()
@@ -147,6 +160,14 @@ class OneBotWebSocketClient(
 
         reconnectAttempts++
         console().sendWarn("attempting-reconnect", reconnectAttempts.toString(), OneBotConfig.maxReconnectAttempts.toString())
+
+        // 触发重连事件
+        statusEventFactory.fireReconnectingEvent(
+            serverUrl = OneBotConfig.getWebSocketUrl(),
+            attemptCount = reconnectAttempts,
+            maxAttempts = OneBotConfig.maxReconnectAttempts,
+            retryDelay = OneBotConfig.reconnectInterval * 20L
+        )
 
         submit(delay = (OneBotConfig.reconnectInterval * 20L)) {
             try {
