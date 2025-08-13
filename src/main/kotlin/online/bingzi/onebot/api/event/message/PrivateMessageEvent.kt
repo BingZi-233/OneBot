@@ -1,9 +1,12 @@
-package online.bingzi.onebot.event.message
+package online.bingzi.onebot.api.event.message
 
 import online.bingzi.onebot.api.OneBotAPI
 
 /**
  * 私聊消息事件
+ * 
+ * 当机器人收到私聊消息时触发此事件
+ * 其他插件可以监听此事件来处理私聊消息
  */
 class PrivateMessageEvent(
     time: Long,

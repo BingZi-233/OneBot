@@ -1,4 +1,4 @@
-package online.bingzi.onebot.config
+package online.bingzi.onebot.internal.config
 
 import taboolib.common.platform.function.console
 import taboolib.module.configuration.Config
@@ -8,6 +8,11 @@ import taboolib.module.lang.sendError
 import taboolib.module.lang.sendInfo
 import java.net.URLEncoder
 
+/**
+ * OneBot 配置管理
+ * 
+ * 内部配置管理组件，负责处理插件的配置文件和各种预设
+ */
 object OneBotConfig {
 
     @Config("config.yml", autoReload = true)

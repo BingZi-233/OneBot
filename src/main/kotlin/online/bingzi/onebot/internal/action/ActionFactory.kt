@@ -1,8 +1,8 @@
-package online.bingzi.onebot.action
+package online.bingzi.onebot.internal.action
 
 import com.google.gson.JsonObject
-import online.bingzi.onebot.client.OneBotWebSocketClient
-import online.bingzi.onebot.config.OneBotConfig
+import online.bingzi.onebot.internal.client.OneBotWebSocketClient
+import online.bingzi.onebot.internal.config.OneBotConfig
 import taboolib.common.platform.function.console
 import taboolib.module.lang.sendWarn
 import java.util.*
@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 动作工厂，用于发送 OneBot API 请求
+ * 
+ * 内部API调用处理组件，负责封装和管理对OneBot协议的API调用
  */
 class ActionFactory(private var client: OneBotWebSocketClient? = null) {
 

@@ -1,8 +1,8 @@
-package online.bingzi.onebot.command
+package online.bingzi.onebot.internal.command
 
 import online.bingzi.onebot.api.OneBotAPI
-import online.bingzi.onebot.config.OneBotConfig
-import online.bingzi.onebot.manager.OneBotManager
+import online.bingzi.onebot.internal.config.OneBotConfig
+import online.bingzi.onebot.internal.manager.OneBotManager
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -15,6 +15,8 @@ import taboolib.module.lang.sendLang
 
 /**
  * OneBot 插件命令
+ * 
+ * 内部命令处理组件，提供插件的管理和测试命令
  */
 @CommandHeader(
     name = "onebot",

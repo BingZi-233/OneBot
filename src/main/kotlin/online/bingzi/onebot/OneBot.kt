@@ -1,7 +1,7 @@
 package online.bingzi.onebot
 
-import online.bingzi.onebot.config.OneBotConfig
-import online.bingzi.onebot.manager.OneBotManager
+import online.bingzi.onebot.internal.config.OneBotConfig
+import online.bingzi.onebot.internal.manager.OneBotManager
 import taboolib.common.platform.Platform
 import taboolib.common.platform.Plugin
 import taboolib.common.platform.function.console

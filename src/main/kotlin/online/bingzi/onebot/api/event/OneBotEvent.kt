@@ -1,10 +1,12 @@
-package online.bingzi.onebot.event.base
+package online.bingzi.onebot.api.event
 
 import taboolib.platform.type.BukkitProxyEvent
 
 /**
  * OneBot 事件基类
  * 所有 OneBot 事件都应继承此类
+ * 
+ * 这是对外提供的API事件基类，其他插件可以监听继承此类的事件
  */
 abstract class OneBotEvent : BukkitProxyEvent() {
 

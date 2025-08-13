@@ -1,9 +1,11 @@
-package online.bingzi.onebot.event.message
+package online.bingzi.onebot.api.event.message
 
-import online.bingzi.onebot.event.base.OneBotEvent
+import online.bingzi.onebot.api.event.OneBotEvent
 
 /**
  * 消息事件基类
+ * 
+ * 其他插件可以监听此事件来处理OneBot收到的消息
  */
 abstract class MessageEvent(
     override val time: Long,
@@ -29,4 +31,3 @@ abstract class MessageEvent(
      */
     abstract fun replyWithQuote(message: String, autoEscape: Boolean = false)
 }
-

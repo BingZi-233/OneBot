@@ -1,7 +1,10 @@
-package online.bingzi.onebot.event.request
+package online.bingzi.onebot.api.event.request
 
 /**
  * 加好友请求事件
+ * 
+ * 当有人申请添加机器人为好友时触发此事件
+ * 其他插件可以监听此事件来处理好友申请
  */
 class FriendRequestEvent(
     time: Long,

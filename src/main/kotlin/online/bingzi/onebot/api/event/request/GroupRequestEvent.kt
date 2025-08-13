@@ -1,7 +1,10 @@
-package online.bingzi.onebot.event.request
+package online.bingzi.onebot.api.event.request
 
 /**
  * 加群请求事件
+ * 
+ * 当有人申请加入群聊或邀请机器人入群时触发此事件
+ * 其他插件可以监听此事件来处理入群申请
  */
 class GroupRequestEvent(
     time: Long,

@@ -1,7 +1,7 @@
 package online.bingzi.onebot.api
 
-import online.bingzi.onebot.action.ActionFactory
-import online.bingzi.onebot.client.OneBotWebSocketClient
+import online.bingzi.onebot.internal.action.ActionFactory
+import online.bingzi.onebot.internal.client.OneBotWebSocketClient
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.lang.sendError

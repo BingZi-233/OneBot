@@ -1,15 +1,15 @@
-package online.bingzi.onebot.event
+package online.bingzi.onebot.internal.event
 
 import com.google.gson.JsonObject
-import online.bingzi.onebot.event.base.OneBotEvent
-import online.bingzi.onebot.event.message.GroupMessageEvent
-import online.bingzi.onebot.event.message.PrivateMessageEvent
-import online.bingzi.onebot.event.notice.FriendAddNotice
-import online.bingzi.onebot.event.notice.GroupBanNotice
-import online.bingzi.onebot.event.notice.GroupDecreaseNotice
-import online.bingzi.onebot.event.notice.GroupIncreaseNotice
-import online.bingzi.onebot.event.request.FriendRequestEvent
-import online.bingzi.onebot.event.request.GroupRequestEvent
+import online.bingzi.onebot.api.event.OneBotEvent
+import online.bingzi.onebot.api.event.message.GroupMessageEvent
+import online.bingzi.onebot.api.event.message.PrivateMessageEvent
+import online.bingzi.onebot.api.event.notice.FriendAddNotice
+import online.bingzi.onebot.api.event.notice.GroupBanNotice
+import online.bingzi.onebot.api.event.notice.GroupDecreaseNotice
+import online.bingzi.onebot.api.event.notice.GroupIncreaseNotice
+import online.bingzi.onebot.api.event.request.FriendRequestEvent
+import online.bingzi.onebot.api.event.request.GroupRequestEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.lang.sendError
@@ -17,6 +17,8 @@ import taboolib.module.lang.sendWarn
 
 /**
  * 事件工厂，用于将 OneBot 消息转换为对应的事件
+ * 
+ * 内部事件处理组件，负责解析OneBot协议消息并创建对应的API事件
  */
 class EventFactory {
 
