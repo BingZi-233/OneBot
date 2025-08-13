@@ -6,6 +6,7 @@ import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.lang.sendError
 import taboolib.module.lang.sendInfo
+import java.util.function.Consumer
 
 /**
  * OneBot API 接口
@@ -39,14 +40,14 @@ object OneBotAPI {
      * @param autoEscape 是否作为纯文本发送
      * @param callback 回调函数，参数为是否发送成功
      */
-    fun sendPrivateMessage(userId: Long, message: String, autoEscape: Boolean = false, callback: (Boolean) -> Unit = {}) {
+    fun sendPrivateMessage(userId: Long, message: String, autoEscape: Boolean = false, callback: Consumer<Boolean>) {
         actionFactory?.sendPrivateMsg(userId, message, autoEscape)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("sendPrivateMessageFailed", throwable.message ?: "Unknown error")
-                    callback(false)
+                    callback.accept(false)
                 } else {
-                    callback(result != null)
+                    callback.accept(result != null)
                 }
             }
         }
@@ -59,14 +60,14 @@ object OneBotAPI {
      * @param autoEscape 是否作为纯文本发送
      * @param callback 回调函数，参数为是否发送成功
      */
-    fun sendGroupMessage(groupId: Long, message: String, autoEscape: Boolean = false, callback: (Boolean) -> Unit = {}) {
+    fun sendGroupMessage(groupId: Long, message: String, autoEscape: Boolean = false, callback: Consumer<Boolean>) {
         actionFactory?.sendGroupMsg(groupId, message, autoEscape)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("sendGroupMessageFailed", throwable.message ?: "Unknown error")
-                    callback(false)
+                    callback.accept(false)
                 } else {
-                    callback(result != null)
+                    callback.accept(result != null)
                 }
             }
         }
@@ -77,14 +78,14 @@ object OneBotAPI {
      * @param messageId 消息ID
      * @param callback 回调函数，参数为是否撤回成功
      */
-    fun deleteMessage(messageId: Int, callback: (Boolean) -> Unit = {}) {
+    fun deleteMessage(messageId: Int, callback: Consumer<Boolean>) {
         actionFactory?.deleteMsg(messageId)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("deleteMessageFailed", throwable.message ?: "Unknown error")
-                    callback(false)
+                    callback.accept(false)
                 } else {
-                    callback(result != null)
+                    callback.accept(result != null)
                 }
             }
         }
@@ -97,14 +98,14 @@ object OneBotAPI {
      * @param duration 禁言时长（秒）
      * @param callback 回调函数，参数为是否成功
      */
-    fun banGroupMember(groupId: Long, userId: Long, duration: Int, callback: (Boolean) -> Unit = {}) {
+    fun banGroupMember(groupId: Long, userId: Long, duration: Int, callback: Consumer<Boolean>) {
         actionFactory?.setGroupBan(groupId, userId, duration)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("banGroupMemberFailed", throwable.message ?: "Unknown error")
-                    callback(false)
+                    callback.accept(false)
                 } else {
-                    callback(result != null)
+                    callback.accept(result != null)
                 }
             }
         }
@@ -117,14 +118,14 @@ object OneBotAPI {
      * @param rejectAddRequest 是否拒绝此人的加群请求
      * @param callback 回调函数，参数为是否成功
      */
-    fun kickGroupMember(groupId: Long, userId: Long, rejectAddRequest: Boolean = false, callback: (Boolean) -> Unit = {}) {
+    fun kickGroupMember(groupId: Long, userId: Long, rejectAddRequest: Boolean = false, callback: Consumer<Boolean>) {
         actionFactory?.setGroupKick(groupId, userId, rejectAddRequest)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("kickGroupMemberFailed", throwable.message ?: "Unknown error")
-                    callback(false)
+                    callback.accept(false)
                 } else {
-                    callback(result != null)
+                    callback.accept(result != null)
                 }
             }
         }
@@ -134,14 +135,14 @@ object OneBotAPI {
      * 获取好友列表
      * @param callback 回调函数，参数为好友列表的JSON数据，失败返回null
      */
-    fun getFriendList(callback: (String?) -> Unit) {
+    fun getFriendList(callback: Consumer<String?>) {
         actionFactory?.getFriendList()?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("getFriendListFailed", throwable.message ?: "Unknown error")
-                    callback(null)
+                    callback.accept(null)
                 } else {
-                    callback(result?.toString())
+                    callback.accept(result?.toString())
                 }
             }
         }
@@ -151,14 +152,14 @@ object OneBotAPI {
      * 获取群列表
      * @param callback 回调函数，参数为群列表的JSON数据，失败返回null
      */
-    fun getGroupList(callback: (String?) -> Unit) {
+    fun getGroupList(callback: Consumer<String?>) {
         actionFactory?.getGroupList()?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("getGroupListFailed", throwable.message ?: "Unknown error")
-                    callback(null)
+                    callback.accept(null)
                 } else {
-                    callback(result?.toString())
+                    callback.accept(result?.toString())
                 }
             }
         }
@@ -169,14 +170,14 @@ object OneBotAPI {
      * @param groupId 群号
      * @param callback 回调函数，参数为群成员列表的JSON数据，失败返回null
      */
-    fun getGroupMemberList(groupId: Long, callback: (String?) -> Unit) {
+    fun getGroupMemberList(groupId: Long, callback: Consumer<String?>) {
         actionFactory?.getGroupMemberList(groupId)?.handle { result, throwable ->
             submit(async = false) {
                 if (throwable != null) {
                     console().sendError("getGroupMemberListFailed", throwable.message ?: "Unknown error")
-                    callback(null)
+                    callback.accept(null)
                 } else {
-                    callback(result?.toString())
+                    callback.accept(result?.toString())
                 }
             }
         }
