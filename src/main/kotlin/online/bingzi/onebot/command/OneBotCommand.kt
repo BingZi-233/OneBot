@@ -131,10 +131,13 @@ object OneBotCommand {
                             return@execute
                         }
 
-                        if (OneBotAPI.sendPrivateMessage(userId, message)) {
-                            sender.sendLang("private-message-success")
-                        } else {
-                            sender.sendLang("private-message-failed")
+                        // 异步发送消息，避免阻塞主线程
+                        OneBotAPI.sendPrivateMessage(userId, message) { success ->
+                            if (success) {
+                                sender.sendLang("private-message-success")
+                            } else {
+                                sender.sendLang("private-message-failed")
+                            }
                         }
                     }
                 }
@@ -159,10 +162,13 @@ object OneBotCommand {
                             return@execute
                         }
 
-                        if (OneBotAPI.sendGroupMessage(groupId, message)) {
-                            sender.sendLang("group-message-success")
-                        } else {
-                            sender.sendLang("group-message-failed")
+                        // 异步发送消息，避免阻塞主线程
+                        OneBotAPI.sendGroupMessage(groupId, message) { success ->
+                            if (success) {
+                                sender.sendLang("group-message-success")
+                            } else {
+                                sender.sendLang("group-message-failed")
+                            }
                         }
                     }
                 }

@@ -3,6 +3,7 @@ package online.bingzi.onebot.api
 import online.bingzi.onebot.action.ActionFactory
 import online.bingzi.onebot.client.OneBotWebSocketClient
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.submit
 
 /**
  * OneBot API 接口
@@ -34,14 +35,18 @@ object OneBotAPI {
      * @param userId 用户QQ号
      * @param message 消息内容
      * @param autoEscape 是否作为纯文本发送
-     * @return 是否发送成功
+     * @param callback 回调函数，参数为是否发送成功
      */
-    fun sendPrivateMessage(userId: Long, message: String, autoEscape: Boolean = false): Boolean {
-        return try {
-            actionFactory?.sendPrivateMsg(userId, message, autoEscape)?.get() != null
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 发送私聊消息失败: ${e.message}")
-            false
+    fun sendPrivateMessage(userId: Long, message: String, autoEscape: Boolean = false, callback: (Boolean) -> Unit = {}) {
+        actionFactory?.sendPrivateMsg(userId, message, autoEscape)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 发送私聊消息失败: ${throwable.message}")
+                    callback(false)
+                } else {
+                    callback(result != null)
+                }
+            }
         }
     }
 
@@ -50,28 +55,36 @@ object OneBotAPI {
      * @param groupId 群号
      * @param message 消息内容
      * @param autoEscape 是否作为纯文本发送
-     * @return 是否发送成功
+     * @param callback 回调函数，参数为是否发送成功
      */
-    fun sendGroupMessage(groupId: Long, message: String, autoEscape: Boolean = false): Boolean {
-        return try {
-            actionFactory?.sendGroupMsg(groupId, message, autoEscape)?.get() != null
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 发送群消息失败: ${e.message}")
-            false
+    fun sendGroupMessage(groupId: Long, message: String, autoEscape: Boolean = false, callback: (Boolean) -> Unit = {}) {
+        actionFactory?.sendGroupMsg(groupId, message, autoEscape)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 发送群消息失败: ${throwable.message}")
+                    callback(false)
+                } else {
+                    callback(result != null)
+                }
+            }
         }
     }
 
     /**
      * 撤回消息
      * @param messageId 消息ID
-     * @return 是否撤回成功
+     * @param callback 回调函数，参数为是否撤回成功
      */
-    fun deleteMessage(messageId: Int): Boolean {
-        return try {
-            actionFactory?.deleteMsg(messageId)?.get() != null
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 撤回消息失败: ${e.message}")
-            false
+    fun deleteMessage(messageId: Int, callback: (Boolean) -> Unit = {}) {
+        actionFactory?.deleteMsg(messageId)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 撤回消息失败: ${throwable.message}")
+                    callback(false)
+                } else {
+                    callback(result != null)
+                }
+            }
         }
     }
 
@@ -80,14 +93,18 @@ object OneBotAPI {
      * @param groupId 群号
      * @param userId 用户QQ号
      * @param duration 禁言时长（秒）
-     * @return 是否成功
+     * @param callback 回调函数，参数为是否成功
      */
-    fun banGroupMember(groupId: Long, userId: Long, duration: Int): Boolean {
-        return try {
-            actionFactory?.setGroupBan(groupId, userId, duration)?.get() != null
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 禁言群成员失败: ${e.message}")
-            false
+    fun banGroupMember(groupId: Long, userId: Long, duration: Int, callback: (Boolean) -> Unit = {}) {
+        actionFactory?.setGroupBan(groupId, userId, duration)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 禁言群成员失败: ${throwable.message}")
+                    callback(false)
+                } else {
+                    callback(result != null)
+                }
+            }
         }
     }
 
@@ -96,54 +113,70 @@ object OneBotAPI {
      * @param groupId 群号
      * @param userId 用户QQ号
      * @param rejectAddRequest 是否拒绝此人的加群请求
-     * @return 是否成功
+     * @param callback 回调函数，参数为是否成功
      */
-    fun kickGroupMember(groupId: Long, userId: Long, rejectAddRequest: Boolean = false): Boolean {
-        return try {
-            actionFactory?.setGroupKick(groupId, userId, rejectAddRequest)?.get() != null
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 踢出群成员失败: ${e.message}")
-            false
+    fun kickGroupMember(groupId: Long, userId: Long, rejectAddRequest: Boolean = false, callback: (Boolean) -> Unit = {}) {
+        actionFactory?.setGroupKick(groupId, userId, rejectAddRequest)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 踢出群成员失败: ${throwable.message}")
+                    callback(false)
+                } else {
+                    callback(result != null)
+                }
+            }
         }
     }
 
     /**
      * 获取好友列表
-     * @return 好友列表的JSON数据，失败返回null
+     * @param callback 回调函数，参数为好友列表的JSON数据，失败返回null
      */
-    fun getFriendList(): String? {
-        return try {
-            actionFactory?.getFriendList()?.get()?.toString()
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 获取好友列表失败: ${e.message}")
-            null
+    fun getFriendList(callback: (String?) -> Unit) {
+        actionFactory?.getFriendList()?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 获取好友列表失败: ${throwable.message}")
+                    callback(null)
+                } else {
+                    callback(result?.toString())
+                }
+            }
         }
     }
 
     /**
      * 获取群列表
-     * @return 群列表的JSON数据，失败返回null
+     * @param callback 回调函数，参数为群列表的JSON数据，失败返回null
      */
-    fun getGroupList(): String? {
-        return try {
-            actionFactory?.getGroupList()?.get()?.toString()
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 获取群列表失败: ${e.message}")
-            null
+    fun getGroupList(callback: (String?) -> Unit) {
+        actionFactory?.getGroupList()?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 获取群列表失败: ${throwable.message}")
+                    callback(null)
+                } else {
+                    callback(result?.toString())
+                }
+            }
         }
     }
 
     /**
      * 获取群成员列表
      * @param groupId 群号
-     * @return 群成员列表的JSON数据，失败返回null
+     * @param callback 回调函数，参数为群成员列表的JSON数据，失败返回null
      */
-    fun getGroupMemberList(groupId: Long): String? {
-        return try {
-            actionFactory?.getGroupMemberList(groupId)?.get()?.toString()
-        } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 获取群成员列表失败: ${e.message}")
-            null
+    fun getGroupMemberList(groupId: Long, callback: (String?) -> Unit) {
+        actionFactory?.getGroupMemberList(groupId)?.handle { result, throwable ->
+            submit(async = false) {
+                if (throwable != null) {
+                    console().sendMessage("§c[OneBot] 获取群成员列表失败: ${throwable.message}")
+                    callback(null)
+                } else {
+                    callback(result?.toString())
+                }
+            }
         }
     }
 }
