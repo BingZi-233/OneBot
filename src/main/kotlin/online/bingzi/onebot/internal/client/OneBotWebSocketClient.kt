@@ -1,10 +1,10 @@
-package online.bingzi.onebot.client
+package online.bingzi.onebot.internal.client
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import online.bingzi.onebot.action.ActionFactory
-import online.bingzi.onebot.config.OneBotConfig
-import online.bingzi.onebot.event.EventFactory
+import online.bingzi.onebot.internal.action.ActionFactory
+import online.bingzi.onebot.internal.config.OneBotConfig
+import online.bingzi.onebot.internal.event.EventFactory
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import taboolib.common.platform.function.console
@@ -16,6 +16,8 @@ import java.net.URI
 
 /**
  * OneBot WebSocket 客户端
+ * 
+ * 内部WebSocket客户端实现，负责与OneBot协议的具体通信
  */
 class OneBotWebSocketClient(
     private val eventFactory: EventFactory,
@@ -31,7 +33,7 @@ class OneBotWebSocketClient(
         customHeaders.forEach { (key, value) ->
             addHeader(key, value)
         }
-        
+
         // 设置连接超时
         connectionLostTimeout = OneBotConfig.connectTimeout
     }
@@ -41,13 +43,13 @@ class OneBotWebSocketClient(
         reconnectAttempts = 0
 
         if (OneBotConfig.debugEnabled) {
-            console().sendMessage("§7[OneBot] 握手信息: ${handshake.httpStatusMessage}")
+            console().sendWarn("handshakeInfo", handshake.httpStatusMessage)
         }
     }
 
     override fun onMessage(message: String) {
         if (OneBotConfig.logRawMessages) {
-            console().sendMessage("§7[OneBot] 收到消息: $message")
+            console().sendWarn("receivedMessage", message)
         }
 
         try {
@@ -114,7 +116,7 @@ class OneBotWebSocketClient(
         }
 
         if (OneBotConfig.logActions) {
-            console().sendMessage("§7[OneBot] 发送动作: ${request}")
+            console().sendWarn("sendingAction", request.toString())
         }
 
         try {

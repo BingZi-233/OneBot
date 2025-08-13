@@ -121,3 +121,33 @@ status-enabled: "&aEnabled"
 status-disabled: "&cDisabled"
 status-yes: "&aYes"
 status-no: "&cNo"
+
+# API messages
+apiInitialized: "&a[OneBot] API initialized"
+sendPrivateMessageFailed: "&c[OneBot] Failed to send private message: {0}"
+sendGroupMessageFailed: "&c[OneBot] Failed to send group message: {0}"
+deleteMessageFailed: "&c[OneBot] Failed to delete message: {0}"
+banGroupMemberFailed: "&c[OneBot] Failed to ban group member: {0}"
+kickGroupMemberFailed: "&c[OneBot] Failed to kick group member: {0}"
+getFriendListFailed: "&c[OneBot] Failed to get friend list: {0}"
+getGroupListFailed: "&c[OneBot] Failed to get group list: {0}"
+getGroupMemberListFailed: "&c[OneBot] Failed to get group member list: {0}"
+
+# Configuration messages
+configReloaded: "&a[OneBot] Configuration file reloaded"
+presetConfigApplied: "&a[OneBot] Applied preset configuration: {0}"
+presetConfigFailed: "&c[OneBot] Failed to apply preset configuration: {0}"
+
+# Event processing messages
+eventProcessingError: "&c[OneBot] Error occurred while processing event: {0}"
+eventTypeDebug: "&7[OneBot] Event type: {0}"
+eventCreationError: "&c[OneBot] Error occurred while creating event: {0}"
+
+# WebSocket debug messages
+handshakeInfo: "&7[OneBot] Handshake info: {0}"
+receivedMessage: "&7[OneBot] Received message: {0}"
+sendingAction: "&7[OneBot] Sending action: {0}"
+
+# Action factory messages
+actionSent: "&7[OneBot] Sent action: {0} (echo: {1})"
+responseReceived: "&7[OneBot] Received response: {0}"

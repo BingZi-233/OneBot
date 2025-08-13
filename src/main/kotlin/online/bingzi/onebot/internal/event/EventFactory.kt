@@ -1,20 +1,24 @@
-package online.bingzi.onebot.event
+package online.bingzi.onebot.internal.event
 
 import com.google.gson.JsonObject
-import online.bingzi.onebot.event.base.OneBotEvent
-import online.bingzi.onebot.event.message.GroupMessageEvent
-import online.bingzi.onebot.event.message.PrivateMessageEvent
-import online.bingzi.onebot.event.notice.FriendAddNotice
-import online.bingzi.onebot.event.notice.GroupBanNotice
-import online.bingzi.onebot.event.notice.GroupDecreaseNotice
-import online.bingzi.onebot.event.notice.GroupIncreaseNotice
-import online.bingzi.onebot.event.request.FriendRequestEvent
-import online.bingzi.onebot.event.request.GroupRequestEvent
+import online.bingzi.onebot.api.event.OneBotEvent
+import online.bingzi.onebot.api.event.message.GroupMessageEvent
+import online.bingzi.onebot.api.event.message.PrivateMessageEvent
+import online.bingzi.onebot.api.event.notice.FriendAddNotice
+import online.bingzi.onebot.api.event.notice.GroupBanNotice
+import online.bingzi.onebot.api.event.notice.GroupDecreaseNotice
+import online.bingzi.onebot.api.event.notice.GroupIncreaseNotice
+import online.bingzi.onebot.api.event.request.FriendRequestEvent
+import online.bingzi.onebot.api.event.request.GroupRequestEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
+import taboolib.module.lang.sendError
+import taboolib.module.lang.sendWarn
 
 /**
  * 事件工厂，用于将 OneBot 消息转换为对应的事件
+ * 
+ * 内部事件处理组件，负责解析OneBot协议消息并创建对应的API事件
  */
 class EventFactory {
 
@@ -32,16 +36,16 @@ class EventFactory {
                     try {
                         event.call()
                     } catch (e: Exception) {
-                        console().sendMessage("§c[OneBot] 事件处理时发生错误: ${e.message}")
+                        console().sendError("eventProcessingError", e.message ?: "Unknown error")
                         if (jsonObject.has("post_type")) {
-                            console().sendMessage("§7[OneBot] 事件类型: ${jsonObject.get("post_type").asString}")
+                            console().sendWarn("eventTypeDebug", jsonObject.get("post_type").asString)
                         }
                         e.printStackTrace()
                     }
                 }
             }
         } catch (e: Exception) {
-            console().sendMessage("§c[OneBot] 创建事件时发生错误: ${e.message}")
+            console().sendError("eventCreationError", e.message ?: "Unknown error")
             e.printStackTrace()
         }
     }
@@ -73,7 +77,7 @@ class EventFactory {
         val subType = json.get("sub_type")?.asString ?: ""
         val messageId = json.get("message_id")?.asInt ?: 0
         val userId = json.get("user_id")?.asLong ?: 0L
-        
+
         // 处理 message 字段，可能是字符串或数组
         val messageElement = json.get("message")
         val message = when {
@@ -82,7 +86,7 @@ class EventFactory {
             messageElement.isJsonArray -> messageElement.toString() // 将消息段数组转换为JSON字符串
             else -> messageElement.toString()
         }
-        
+
         val font = json.get("font")?.asInt ?: 0
 
         return when (messageType) {

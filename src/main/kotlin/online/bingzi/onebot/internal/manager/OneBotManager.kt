@@ -1,10 +1,10 @@
-package online.bingzi.onebot.manager
+package online.bingzi.onebot.internal.manager
 
-import online.bingzi.onebot.action.ActionFactory
+import online.bingzi.onebot.internal.action.ActionFactory
 import online.bingzi.onebot.api.OneBotAPI
-import online.bingzi.onebot.client.OneBotWebSocketClient
-import online.bingzi.onebot.config.OneBotConfig
-import online.bingzi.onebot.event.EventFactory
+import online.bingzi.onebot.internal.client.OneBotWebSocketClient
+import online.bingzi.onebot.internal.config.OneBotConfig
+import online.bingzi.onebot.internal.event.EventFactory
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.lang.asLangText
@@ -15,6 +15,8 @@ import taboolib.module.lang.sendWarn
 /**
  * OneBot 连接管理器
  * 负责管理 WebSocket 连接和各个组件的生命周期
+ * 
+ * 这是内部管理组件，负责协调各个内部模块的工作
  */
 object OneBotManager {
 

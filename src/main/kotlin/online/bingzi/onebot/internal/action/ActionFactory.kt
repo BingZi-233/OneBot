@@ -1,15 +1,18 @@
-package online.bingzi.onebot.action
+package online.bingzi.onebot.internal.action
 
 import com.google.gson.JsonObject
-import online.bingzi.onebot.client.OneBotWebSocketClient
-import online.bingzi.onebot.config.OneBotConfig
+import online.bingzi.onebot.internal.client.OneBotWebSocketClient
+import online.bingzi.onebot.internal.config.OneBotConfig
 import taboolib.common.platform.function.console
+import taboolib.module.lang.sendWarn
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 动作工厂，用于发送 OneBot API 请求
+ * 
+ * 内部API调用处理组件，负责封装和管理对OneBot协议的API调用
  */
 class ActionFactory(private var client: OneBotWebSocketClient? = null) {
 
@@ -38,7 +41,7 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
         pendingActions[echo] = future
 
         // 设置超时 (Java 8 兼容方式)
-        val timeoutFuture = CompletableFuture<JsonObject>()
+        CompletableFuture<JsonObject>()
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
@@ -49,14 +52,14 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
             }
         }, 10000) // 10秒超时
 
-        future.whenComplete { _, _ -> 
+        future.whenComplete { _, _ ->
             timer.cancel()
-            pendingActions.remove(echo) 
+            pendingActions.remove(echo)
         }
 
         if (currentClient.sendAction(action, params, echo)) {
             if (OneBotConfig.debugEnabled) {
-                console().sendMessage("§7[OneBot] 发送动作: $action (echo: $echo)")
+                console().sendWarn("actionSent", action, echo)
             }
         } else {
             future.completeExceptionally(RuntimeException("发送动作失败"))
@@ -73,7 +76,7 @@ class ActionFactory(private var client: OneBotWebSocketClient? = null) {
         val future = pendingActions.remove(echo) ?: return
 
         if (OneBotConfig.debugEnabled) {
-            console().sendMessage("§7[OneBot] 收到响应: $echo")
+            console().sendWarn("responseReceived", echo)
         }
 
         val retCode = json.get("retcode")?.asInt ?: -1

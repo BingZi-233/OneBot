@@ -1,8 +1,8 @@
-package online.bingzi.onebot.command
+package online.bingzi.onebot.internal.command
 
 import online.bingzi.onebot.api.OneBotAPI
-import online.bingzi.onebot.config.OneBotConfig
-import online.bingzi.onebot.manager.OneBotManager
+import online.bingzi.onebot.internal.config.OneBotConfig
+import online.bingzi.onebot.internal.manager.OneBotManager
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -15,6 +15,8 @@ import taboolib.module.lang.sendLang
 
 /**
  * OneBot 插件命令
+ * 
+ * 内部命令处理组件，提供插件的管理和测试命令
  */
 @CommandHeader(
     name = "onebot",
@@ -131,10 +133,13 @@ object OneBotCommand {
                             return@execute
                         }
 
-                        if (OneBotAPI.sendPrivateMessage(userId, message)) {
-                            sender.sendLang("private-message-success")
-                        } else {
-                            sender.sendLang("private-message-failed")
+                        // 异步发送消息，避免阻塞主线程
+                        OneBotAPI.sendPrivateMessage(userId, message) { success ->
+                            if (success) {
+                                sender.sendLang("private-message-success")
+                            } else {
+                                sender.sendLang("private-message-failed")
+                            }
                         }
                     }
                 }
@@ -159,10 +164,13 @@ object OneBotCommand {
                             return@execute
                         }
 
-                        if (OneBotAPI.sendGroupMessage(groupId, message)) {
-                            sender.sendLang("group-message-success")
-                        } else {
-                            sender.sendLang("group-message-failed")
+                        // 异步发送消息，避免阻塞主线程
+                        OneBotAPI.sendGroupMessage(groupId, message) { success ->
+                            if (success) {
+                                sender.sendLang("group-message-success")
+                            } else {
+                                sender.sendLang("group-message-failed")
+                            }
                         }
                     }
                 }
@@ -176,7 +184,7 @@ object OneBotCommand {
 
     private fun showStatus(sender: ProxyCommandSender) {
         sender.sendMessage(sender.asLangText("status-header"))
-        
+
         sender.sendLang("status-connection", OneBotManager.getStatus())
         sender.sendLang("status-base-url", OneBotConfig.url)
         sender.sendLang("status-full-url", OneBotManager.getCurrentUrl())
@@ -185,7 +193,7 @@ object OneBotCommand {
         sender.sendLang("status-debug-mode", if (OneBotConfig.debugEnabled) sender.asLangText("status-enabled") else sender.asLangText("status-disabled"))
         sender.sendLang("status-custom-path", OneBotConfig.customPath.ifEmpty { sender.asLangText("status-no-custom-path") })
         sender.sendLang("status-mirai-mode", if (OneBotConfig.isMirai) sender.asLangText("status-yes") else sender.asLangText("status-no"))
-        
+
         val customHeaders = OneBotConfig.getCustomHeaders()
         if (customHeaders.isNotEmpty()) {
             sender.sendInfo("status-custom-headers")
@@ -196,7 +204,7 @@ object OneBotCommand {
                 sender.sendMessage("§7   $key: $displayValue")
             }
         }
-        
+
         sender.sendMessage(sender.asLangText("status-footer"))
     }
 }

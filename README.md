@@ -22,7 +22,7 @@
 - ✅ **灵活的 WebSocket 连接** - 支持自定义URL、路径、参数和请求头
 - ✅ **预设配置系统** - 一键配置常见Bot（go-cqhttp、Mirai、NoneBot2等）
 - ✅ **完整的事件系统** - 消息、通知、请求事件全覆盖
-- ✅ **丰富的 API 接口** - 同步/异步API调用，支持群管理、消息发送等
+- ✅ **完全异步的 API 接口** - 所有API调用均为异步回调模式，避免阻塞主线程
 - ✅ **智能重连机制** - 自动重连、断线恢复
 - ✅ **调试和监控** - 完善的日志系统和状态监控
 - ✅ **简洁的公共接口** - 方便其他插件集成使用
@@ -133,18 +133,52 @@ fun onPrivateMessage(event: PrivateMessageEvent) {
 ```kotlin
 import online.bingzi.onebot.api.OneBotAPI
 
-// 发送消息
-OneBotAPI.sendGroupMessage(群号, "Hello Group!")
-OneBotAPI.sendPrivateMessage(QQ号, "Hello Private!")
+// 发送消息（异步回调模式）
+OneBotAPI.sendGroupMessage(群号, "Hello Group!") { success ->
+    if (success) {
+        println("群消息发送成功")
+    } else {
+        println("群消息发送失败")
+    }
+}
 
-// 群管理
-OneBotAPI.banGroupMember(群号, QQ号, 600) // 禁言10分钟
-OneBotAPI.kickGroupMember(群号, QQ号, true) // 踢出并拒绝加群请求
+OneBotAPI.sendPrivateMessage(QQ号, "Hello Private!") { success ->
+    if (success) {
+        println("私聊消息发送成功")
+    }
+}
 
-// 获取信息
-val friendList = OneBotAPI.getFriendList()
-val groupList = OneBotAPI.getGroupList()
-val memberList = OneBotAPI.getGroupMemberList(群号)
+// 群管理（异步回调）
+OneBotAPI.banGroupMember(群号, QQ号, 600) { success ->
+    if (success) {
+        println("禁言成功")
+    }
+} // 禁言10分钟
+
+OneBotAPI.kickGroupMember(群号, QQ号, true) { success ->
+    if (success) {
+        println("踢出成功")
+    }
+} // 踢出并拒绝加群请求
+
+// 获取信息（异步回调）
+OneBotAPI.getFriendList { friendList ->
+    if (friendList != null) {
+        println("好友列表: $friendList")
+    }
+}
+
+OneBotAPI.getGroupList { groupList ->
+    if (groupList != null) {
+        println("群列表: $groupList") 
+    }
+}
+
+OneBotAPI.getGroupMemberList(群号) { memberList ->
+    if (memberList != null) {
+        println("群成员列表: $memberList")
+    }
+}
 
 // 检查连接状态
 if (OneBotAPI.isConnected()) {
@@ -161,17 +195,31 @@ OneBot 插件架构
 ├── 📁 client/          # WebSocket 连接
 │   └── OneBotWebSocketClient  # WebSocket客户端实现
 ├── 📁 event/           # 事件系统
+│   ├── EventFactory   # 事件工厂，解析和分发事件
 │   ├── base/          # 基础事件类
-│   ├── message/       # 消息事件 (私聊/群聊)
-│   ├── notice/        # 通知事件 (群成员变化/禁言等)
-│   └── request/       # 请求事件 (好友/群请求)
+│   │   └── OneBotEvent # 事件基类
+│   ├── message/       # 消息事件包
+│   │   ├── MessageEvent        # 消息事件基类
+│   │   ├── PrivateMessageEvent # 私聊消息事件
+│   │   └── GroupMessageEvent   # 群消息事件
+│   ├── notice/        # 通知事件包
+│   │   ├── NoticeEvent         # 通知事件基类
+│   │   ├── GroupIncreaseNotice # 群成员增加通知
+│   │   ├── GroupDecreaseNotice # 群成员减少通知
+│   │   ├── GroupBanNotice      # 群禁言通知
+│   │   └── FriendAddNotice     # 好友添加通知
+│   └── request/       # 请求事件包
+│       ├── RequestEvent        # 请求事件基类
+│       ├── FriendRequestEvent  # 加好友请求事件
+│       └── GroupRequestEvent   # 加群请求事件
 ├── 📁 action/         # API 调用
-│   └── ActionFactory  # 异步API调用工厂
+│   └── ActionFactory  # 异步API调用工厂，基于CompletableFuture
 ├── 📁 api/            # 公共接口
-│   └── OneBotAPI     # 静态API接口
+│   └── OneBotAPI     # 异步回调模式的API接口
 ├── 📁 manager/        # 连接管理
 │   └── OneBotManager # 生命周期管理
 ├── 📁 command/        # 命令系统
+│   └── OneBotCommand # 管理命令实现
 └── 📁 example/        # 使用示例
 ```
 

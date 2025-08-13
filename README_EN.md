@@ -22,6 +22,7 @@ A powerful Minecraft server plugin that bridges OneBot protocol implementations 
 - 🎮 **Wide Compatibility** - Works with Minecraft 1.8-1.21+ servers
 - 🚀 **High Performance** - Built on TabooLib framework for optimal performance
 - 🔧 **Easy Configuration** - Pre-configured templates for popular OneBot implementations
+- ⚡ **Fully Async APIs** - All API calls use async callback patterns to prevent main thread blocking
 - 📊 **Metrics Integration** - Built-in bStats metrics for usage analytics
 - 🌍 **Internationalization** - Multi-language support with i18n
 - 🔄 **Real-time Sync** - Bidirectional message forwarding between game and chat platforms
@@ -82,19 +83,149 @@ A powerful Minecraft server plugin that bridges OneBot protocol implementations 
    /onebot status
    ```
 
-## 📁 Project Structure
+## 🏗️ Architecture Design
 
 ```
-OneBot/
-├── src/
-│   └── main/
-│       ├── kotlin/          # Kotlin source code
-│       └── resources/       # Resource files
-│           ├── config.yml   # Main configuration
-│           └── lang/        # Language files
-├── build.gradle.kts         # Build configuration
-└── settings.gradle.kts      # Project settings
+OneBot Plugin Architecture
+├── 📁 config/          # Configuration Management
+│   └── OneBotConfig    # Configuration class with preset and custom config support
+├── 📁 client/          # WebSocket Connection
+│   └── OneBotWebSocketClient  # WebSocket client implementation
+├── 📁 event/           # Event System
+│   ├── EventFactory   # Event factory for parsing and dispatching events
+│   ├── base/          # Base event classes
+│   │   └── OneBotEvent # Base event class
+│   ├── message/       # Message Event Package
+│   │   ├── MessageEvent        # Message event base class
+│   │   ├── PrivateMessageEvent # Private message event
+│   │   └── GroupMessageEvent   # Group message event
+│   ├── notice/        # Notice Event Package
+│   │   ├── NoticeEvent         # Notice event base class
+│   │   ├── GroupIncreaseNotice # Group member increase notification
+│   │   ├── GroupDecreaseNotice # Group member decrease notification
+│   │   ├── GroupBanNotice      # Group ban notification
+│   │   └── FriendAddNotice     # Friend add notification
+│   └── request/       # Request Event Package
+│       ├── RequestEvent        # Request event base class
+│       ├── FriendRequestEvent  # Friend request event
+│       └── GroupRequestEvent   # Group request event
+├── 📁 action/         # API Calls
+│   └── ActionFactory  # Async API call factory based on CompletableFuture
+├── 📁 api/            # Public Interface
+│   └── OneBotAPI     # Async callback mode API interface
+├── 📁 manager/        # Connection Management
+│   └── OneBotManager # Lifecycle management
+├── 📁 command/        # Command System
+│   └── OneBotCommand # Management command implementation
+└── 📁 example/        # Usage Examples
 ```
+
+## 💻 Development Usage
+
+### Listening to Events
+
+```kotlin
+import online.bingzi.onebot.event.message.GroupMessageEvent
+import online.bingzi.onebot.event.message.PrivateMessageEvent
+import taboolib.common.platform.event.SubscribeEvent
+
+@SubscribeEvent
+fun onGroupMessage(event: GroupMessageEvent) {
+    when {
+        event.message == "hello" -> {
+            event.reply("Hello, world!")
+        }
+        event.message == "ping" -> {
+            event.replyWithAt("pong!")
+        }
+        event.message.startsWith("echo ") -> {
+            val content = event.message.removePrefix("echo ")
+            event.replyWithQuote("You said: $content")
+        }
+    }
+}
+
+@SubscribeEvent
+fun onPrivateMessage(event: PrivateMessageEvent) {
+    if (event.message.contains("help")) {
+        event.reply("OneBot Plugin v1.0\nSupported commands: ...")
+    }
+}
+```
+
+### Using API
+
+```kotlin
+import online.bingzi.onebot.api.OneBotAPI
+
+// Send messages (async callback mode)
+OneBotAPI.sendGroupMessage(groupId, "Hello Group!") { success ->
+    if (success) {
+        println("Group message sent successfully")
+    } else {
+        println("Failed to send group message")
+    }
+}
+
+OneBotAPI.sendPrivateMessage(qqNumber, "Hello Private!") { success ->
+    if (success) {
+        println("Private message sent successfully")
+    }
+}
+
+// Group management (async callback)
+OneBotAPI.banGroupMember(groupId, qqNumber, 600) { success ->
+    if (success) {
+        println("Ban successful")
+    }
+} // Ban for 10 minutes
+
+OneBotAPI.kickGroupMember(groupId, qqNumber, true) { success ->
+    if (success) {
+        println("Kick successful")
+    }
+} // Kick and reject add requests
+
+// Get information (async callback)
+OneBotAPI.getFriendList { friendList ->
+    if (friendList != null) {
+        println("Friend list: $friendList")
+    }
+}
+
+OneBotAPI.getGroupList { groupList ->
+    if (groupList != null) {
+        println("Group list: $groupList") 
+    }
+}
+
+OneBotAPI.getGroupMemberList(groupId) { memberList ->
+    if (memberList != null) {
+        println("Group member list: $memberList")
+    }
+}
+
+// Check connection status
+if (OneBotAPI.isConnected()) {
+    // Execute operations that require connection
+}
+```
+
+## 📚 Event Types
+
+### Message Events
+- `PrivateMessageEvent` - Private message
+- `GroupMessageEvent` - Group message
+
+### Notice Events  
+- `GroupIncreaseNotice` - Group member increase
+- `GroupDecreaseNotice` - Group member decrease
+- `GroupBanNotice` - Group ban event
+- `FriendAddNotice` - Friend add
+
+### Request Events
+- `FriendRequestEvent` - Friend request
+- `GroupRequestEvent` - Group request
 
 ## 🔧 Development
 

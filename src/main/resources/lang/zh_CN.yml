@@ -121,3 +121,33 @@ status-enabled: "&a启用"
 status-disabled: "&c禁用"
 status-yes: "&a是"
 status-no: "&c否"
+
+# API 消息
+apiInitialized: "&a[OneBot] API 已初始化"
+sendPrivateMessageFailed: "&c[OneBot] 发送私聊消息失败: {0}"
+sendGroupMessageFailed: "&c[OneBot] 发送群消息失败: {0}"
+deleteMessageFailed: "&c[OneBot] 撤回消息失败: {0}"
+banGroupMemberFailed: "&c[OneBot] 禁言群成员失败: {0}"
+kickGroupMemberFailed: "&c[OneBot] 踢出群成员失败: {0}"
+getFriendListFailed: "&c[OneBot] 获取好友列表失败: {0}"
+getGroupListFailed: "&c[OneBot] 获取群列表失败: {0}"
+getGroupMemberListFailed: "&c[OneBot] 获取群成员列表失败: {0}"
+
+# 配置消息
+configReloaded: "&a[OneBot] 配置文件已重新加载"
+presetConfigApplied: "&a[OneBot] 已应用预设配置: {0}"
+presetConfigFailed: "&c[OneBot] 应用预设配置失败: {0}"
+
+# 事件处理消息
+eventProcessingError: "&c[OneBot] 事件处理时发生错误: {0}"
+eventTypeDebug: "&7[OneBot] 事件类型: {0}"
+eventCreationError: "&c[OneBot] 创建事件时发生错误: {0}"
+
+# WebSocket调试消息
+handshakeInfo: "&7[OneBot] 握手信息: {0}"
+receivedMessage: "&7[OneBot] 收到消息: {0}"
+sendingAction: "&7[OneBot] 发送动作: {0}"
+
+# Action工厂消息
+actionSent: "&7[OneBot] 发送动作: {0} (echo: {1})"
+responseReceived: "&7[OneBot] 收到响应: {0}"
