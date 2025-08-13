@@ -5,6 +5,7 @@ import online.bingzi.onebot.api.OneBotAPI
 import online.bingzi.onebot.internal.client.OneBotWebSocketClient
 import online.bingzi.onebot.internal.config.OneBotConfig
 import online.bingzi.onebot.internal.event.EventFactory
+import online.bingzi.onebot.internal.event.StatusEventFactory
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.submit
 import taboolib.module.lang.asLangText
@@ -23,6 +24,7 @@ object OneBotManager {
     private var client: OneBotWebSocketClient? = null
     private var eventFactory: EventFactory? = null
     private var actionFactory: ActionFactory? = null
+    private var statusEventFactory: StatusEventFactory? = null
 
     /**
      * 启动 OneBot 连接
@@ -39,7 +41,8 @@ object OneBotManager {
             // 初始化组件
             eventFactory = EventFactory()
             actionFactory = ActionFactory() // 临时的ActionFactory，稍后会设置client
-            client = OneBotWebSocketClient(eventFactory!!, actionFactory!!)
+            statusEventFactory = StatusEventFactory()
+            client = OneBotWebSocketClient(eventFactory!!, actionFactory!!, statusEventFactory!!)
 
             // 设置ActionFactory的client
             actionFactory!!.setClient(client!!)
@@ -79,6 +82,7 @@ object OneBotManager {
             client = null
             eventFactory = null
             actionFactory = null
+            statusEventFactory = null
 
             console().sendInfo("connection-stopped")
 
