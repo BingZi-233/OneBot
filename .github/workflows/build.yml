@@ -16,7 +16,7 @@ env:
 jobs:
   build:
     name: 🔨 构建
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     outputs:
       version: ${{ steps.version.outputs.version }}
       short_version: ${{ steps.version.outputs.short_version }}
@@ -127,7 +127,7 @@ jobs:
     if: |
       github.ref == 'refs/heads/master' &&
       github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     environment: MavenConfig
     
     steps:
@@ -183,7 +183,7 @@ jobs:
   qodana:
     name: 🔍 Qodana 代码质量扫描
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     permissions:
       contents: read
       checks: write
@@ -240,7 +240,7 @@ jobs:
     name: 🎉 创建 GitHub Release
     needs: build
     if: needs.build.outputs.should_release == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
     permissions:
       contents: write
       packages: write
