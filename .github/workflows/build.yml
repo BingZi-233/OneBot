@@ -17,8 +17,6 @@ jobs:
   check-runner:
     name: 🔍 检查Runner可用性
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     outputs:
       runner: ${{ steps.set-runner.outputs.use-runner }}
     steps:
@@ -28,7 +26,7 @@ jobs:
         with:
           primary-runner: "self-hosted"
           fallback-runner: "ubuntu-latest"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.RUNNER_SELECT }}
 
   build:
     name: 🔨 构建
