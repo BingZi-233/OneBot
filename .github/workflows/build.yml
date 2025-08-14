@@ -18,28 +18,20 @@ jobs:
     name: 🔍 检查Runner可用性
     runs-on: ubuntu-latest
     outputs:
-      runner: ${{ steps.check.outputs.runner }}
+      runner: ${{ steps.set-runner.outputs.use-runner }}
     steps:
-      - name: 检查自托管Runner状态
-        id: check
-        run: |
-          # 检查自托管Runner是否在线
-          RUNNER_STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | \
-            jq -r '.runners[] | select(.labels[].name == "self-hosted") | .status' | head -1)
-          
-          if [[ "$RUNNER_STATUS" == "online" ]]; then
-            echo "runner=self-hosted" >> $GITHUB_OUTPUT
-            echo "✅ 自托管Runner在线，将使用自托管Runner"
-          else
-            echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
-            echo "⚠️ 自托管Runner离线，将使用GitHub托管Runner"
-          fi
+      - name: 确定Runner类型
+        id: set-runner
+        uses: jimmygchen/runner-fallback-action@v1
+        with:
+          primary-runner: "self-hosted"
+          fallback-runner: "ubuntu-latest"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: 🔨 构建
     needs: check-runner
-    runs-on: ${{ needs.check-runner.outputs.runner }}
+    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       short_version: ${{ steps.version.outputs.short_version }}
@@ -155,7 +147,7 @@ jobs:
     if: |
       github.ref == 'refs/heads/master' &&
       github.event_name != 'pull_request'
-    runs-on: ${{ needs.check-runner.outputs.runner }}
+    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
     environment: MavenConfig
     
     steps:
@@ -211,7 +203,7 @@ jobs:
   qodana:
     name: 🔍 Qodana 代码质量扫描
     needs: [build, check-runner]
-    runs-on: ${{ needs.check-runner.outputs.runner }}
+    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
     permissions:
       contents: read
       checks: write
@@ -268,7 +260,7 @@ jobs:
     name: 🎉 创建 GitHub Release
     needs: [build, check-runner]
     if: needs.build.outputs.should_release == 'true'
-    runs-on: ${{ needs.check-runner.outputs.runner }}
+    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
     permissions:
       contents: write
       packages: write
