@@ -14,9 +14,32 @@ env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
 
 jobs:
+  check-runner:
+    name: 🔍 检查Runner可用性
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.check.outputs.runner }}
+    steps:
+      - name: 检查自托管Runner状态
+        id: check
+        run: |
+          # 检查自托管Runner是否在线
+          RUNNER_STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | \
+            jq -r '.runners[] | select(.labels[].name == "self-hosted") | .status' | head -1)
+          
+          if [[ "$RUNNER_STATUS" == "online" ]]; then
+            echo "runner=self-hosted" >> $GITHUB_OUTPUT
+            echo "✅ 自托管Runner在线，将使用自托管Runner"
+          else
+            echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
+            echo "⚠️ 自托管Runner离线，将使用GitHub托管Runner"
+          fi
+
   build:
     name: 🔨 构建
-    runs-on: [self-hosted, ubuntu-latest]
+    needs: check-runner
+    runs-on: ${{ needs.check-runner.outputs.runner }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       short_version: ${{ steps.version.outputs.short_version }}
@@ -98,7 +121,12 @@ jobs:
       - name: 🔧 执行项目构建
         run: |
           chmod +x gradlew
-          ./gradlew clean build --no-daemon --info
+          # macOS上使用更多并行构建以提升性能
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            ./gradlew clean build --no-daemon --parallel --max-workers=4 --info
+          else
+            ./gradlew clean build --no-daemon --info
+          fi
           
       - name: 🛠️ 构建开发版本API
         run: ./gradlew taboolibBuildApi -PDeleteCode --no-daemon --info
@@ -123,11 +151,11 @@ jobs:
           retention-days: 30
   maven-publish:
     name: 📚 发布到 Maven 仓库
-    needs: build
+    needs: [build, check-runner]
     if: |
       github.ref == 'refs/heads/master' &&
       github.event_name != 'pull_request'
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ${{ needs.check-runner.outputs.runner }}
     environment: MavenConfig
     
     steps:
@@ -182,8 +210,8 @@ jobs:
 
   qodana:
     name: 🔍 Qodana 代码质量扫描
-    needs: build
-    runs-on: [self-hosted, ubuntu-latest]
+    needs: [build, check-runner]
+    runs-on: ${{ needs.check-runner.outputs.runner }}
     permissions:
       contents: read
       checks: write
@@ -238,9 +266,9 @@ jobs:
 
   release:
     name: 🎉 创建 GitHub Release
-    needs: build
+    needs: [build, check-runner]
     if: needs.build.outputs.should_release == 'true'
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ${{ needs.check-runner.outputs.runner }}
     permissions:
       contents: write
       packages: write
