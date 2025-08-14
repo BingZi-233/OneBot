@@ -14,24 +14,9 @@ env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=2
 
 jobs:
-  check-runner:
-    name: 🔍 检查Runner可用性
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.set-runner.outputs.use-runner }}
-    steps:
-      - name: 确定Runner类型
-        id: set-runner
-        uses: jimmygchen/runner-fallback-action@v1
-        with:
-          primary-runner: "self-hosted"
-          fallback-runner: "ubuntu-latest"
-          github-token: ${{ secrets.RUNNER_SELECT }}
-
   build:
     name: 🔨 构建
-    needs: check-runner
-    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
       short_version: ${{ steps.version.outputs.short_version }}
@@ -47,7 +32,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'zulu'
+          distribution: 'temurin'
           
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
@@ -113,12 +98,7 @@ jobs:
       - name: 🔧 执行项目构建
         run: |
           chmod +x gradlew
-          # macOS上使用更多并行构建以提升性能
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            ./gradlew clean build --no-daemon --parallel --max-workers=4 --info
-          else
-            ./gradlew clean build --no-daemon --info
-          fi
+          ./gradlew clean build --no-daemon --info
           
       - name: 🛠️ 构建开发版本API
         run: ./gradlew taboolibBuildApi -PDeleteCode --no-daemon --info
@@ -143,11 +123,11 @@ jobs:
           retention-days: 30
   maven-publish:
     name: 📚 发布到 Maven 仓库
-    needs: [build, check-runner]
+    needs: build
     if: |
       github.ref == 'refs/heads/master' &&
       github.event_name != 'pull_request'
-    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
+    runs-on: ubuntu-latest
     environment: MavenConfig
     
     steps:
@@ -158,7 +138,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'zulu'
+          distribution: 'temurin'
           
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
@@ -202,8 +182,8 @@ jobs:
 
   qodana:
     name: 🔍 Qodana 代码质量扫描
-    needs: [build, check-runner]
-    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
+    needs: build
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
@@ -220,7 +200,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'zulu'
+          distribution: 'temurin'
           
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
@@ -258,9 +238,9 @@ jobs:
 
   release:
     name: 🎉 创建 GitHub Release
-    needs: [build, check-runner]
+    needs: build
     if: needs.build.outputs.should_release == 'true'
-    runs-on: ${{ fromJson(needs.check-runner.outputs.runner) }}
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
