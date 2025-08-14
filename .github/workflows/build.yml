@@ -17,6 +17,8 @@ jobs:
   check-runner:
     name: 🔍 检查Runner可用性
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       runner: ${{ steps.set-runner.outputs.use-runner }}
     steps:
