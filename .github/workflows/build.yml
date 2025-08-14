@@ -27,13 +27,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: ☕ 配置 JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          
+
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
         with:
@@ -44,13 +44,13 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-          
+
       - name: 🐘 配置 Gradle 构建工具
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
           cache-read-only: false
-          
+
       - name: 🏷️ 解析版本信息
         id: version
         run: |
@@ -73,7 +73,7 @@ jobs:
           
           echo "📦 完整版本: ${VERSION}"
           echo "🏷️ 版本号: ${SHORT_VERSION}"
-          
+
       - name: 🎯 判断发布条件
         id: check_release
         run: |
@@ -88,18 +88,18 @@ jobs:
           fi
           
           echo "should_release=${SHOULD_RELEASE}" >> $GITHUB_OUTPUT
-          
+
       - name: 📝 更新版本号到 gradle.properties
         run: |
           echo "🔄 更新 gradle.properties 中的版本号为: ${{ steps.version.outputs.short_version }}"
           sed -i "s/^version=.*/version=${{ steps.version.outputs.short_version }}/" gradle.properties
           cat gradle.properties
-          
+
       - name: 🔧 执行项目构建
         run: |
           chmod +x gradlew
           ./gradlew clean build --no-daemon --info
-          
+
       - name: 🛠️ 构建开发版本API
         run: ./gradlew taboolibBuildApi -PDeleteCode --no-daemon --info
 
@@ -133,13 +133,13 @@ jobs:
     steps:
       - name: 📥 检出代码仓库
         uses: actions/checkout@v4
-        
+
       - name: ☕ 配置 JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          
+
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
         with:
@@ -151,13 +151,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-maven-
             ${{ runner.os }}-gradle-
-          
+
       - name: 🐘 配置 Gradle 构建工具
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
           cache-read-only: true
-          
+
       - name: 🚀 推送到 Maven 仓库
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -170,7 +170,7 @@ jobs:
           # 先构建API JAR，再发布
           ./gradlew taboolibBuildApi -PDeleteCode --no-daemon --info
           ./gradlew publish --no-daemon --info
-          
+
       - name: ✅ Maven 发布结果
         if: success()
         run: |
@@ -189,19 +189,19 @@ jobs:
       checks: write
       pull-requests: write
       security-events: write
-      
+
     steps:
       - name: 📥 检出代码仓库
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: ☕ 配置 JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
-          
+
       - name: 📦 缓存 Gradle 依赖
         uses: actions/cache@v4
         with:
@@ -213,7 +213,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-qodana-
             ${{ runner.os }}-gradle-
-            
+
       - name: 🔍 运行 Qodana 扫描
         uses: JetBrains/qodana-action@v2024.3
         with:
@@ -221,20 +221,159 @@ jobs:
           args: --source-directory=${{ github.workspace }}
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
-          
+
       - name: 📊 上传 Qodana 报告
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
           category: qodana
-          
+
       - name: ✅ Qodana 扫描完成
         if: success()
         run: |
           echo "✅ Qodana 代码质量扫描完成"
           echo "📊 扫描报告已上传到 Security 标签页"
           echo "🔗 查看详细报告: https://github.com/${{ github.repository }}/security/code-scanning"
+
+  modrinth:
+    name: 📦 发布到 Modrinth
+    needs: build
+    if: needs.build.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    environment: ModrinthConfig
+
+    steps:
+      - name: 📥 检出代码仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📥 获取用户版构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts-${{ github.sha }}
+          path: build/libs/
+
+      - name: 📝 Generate Changelog
+        id: changelog
+        run: |
+          # Get the latest tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          echo "## 📝 What's Changed" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          
+          if [ -n "$LATEST_TAG" ]; then
+            echo "### Changes since ${LATEST_TAG}:" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          
+            # Group commits by type
+            echo "#### ✨ Features" >> CHANGELOG.md
+            FEAT_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || echo "")
+            echo "${FEAT_COMMITS:-  - No new features}" >> CHANGELOG.md
+            echo -e "\n" >> CHANGELOG.md
+          
+            echo "#### 🐛 Bug Fixes" >> CHANGELOG.md
+            FIX_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || echo "")
+            echo "${FIX_COMMITS:-  - No bug fixes}" >> CHANGELOG.md
+            echo -e "\n" >> CHANGELOG.md
+          
+            echo "#### 📚 Documentation" >> CHANGELOG.md
+            DOCS_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || echo "")
+            echo "${DOCS_COMMITS:-  - No documentation updates}" >> CHANGELOG.md
+            echo -e "\n" >> CHANGELOG.md
+          
+            echo "#### 🔧 Other Changes" >> CHANGELOG.md
+            git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep -v "^feat\|^fix\|^docs" | head -20 >> CHANGELOG.md
+            echo -e "\n" >> CHANGELOG.md
+          else
+            echo "### All Changes:" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            git log --pretty=format:"- %s (%h)" | head -50 >> CHANGELOG.md
+            echo -e "\n" >> CHANGELOG.md
+          fi
+          
+          # Save to output
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat CHANGELOG.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🚀 发布到 Modrinth
+        uses: cloudnode-pro/modrinth-publish@v2
+        with:
+          token: ${{ secrets.MODRINTH_TOKEN }}
+          project: onebot
+          version: ${{ needs.build.outputs.short_version }}
+          name: OneBot ${{ needs.build.outputs.version }}
+          changelog: ${{ steps.changelog.outputs.changelog }}
+          loaders: |
+            bukkit
+            spigot
+            paper
+            purpur
+            folia
+          game-versions: |
+            1.12
+            1.12.1
+            1.12.2
+            1.13
+            1.13.1
+            1.13.2
+            1.14
+            1.14.1
+            1.14.2
+            1.14.3
+            1.14.4
+            1.15
+            1.15.1
+            1.15.2
+            1.16
+            1.16.1
+            1.16.2
+            1.16.3
+            1.16.4
+            1.16.5
+            1.17
+            1.17.1
+            1.18
+            1.18.1
+            1.18.2
+            1.19
+            1.19.1
+            1.19.2
+            1.19.3
+            1.19.4
+            1.20
+            1.20.1
+            1.20.2
+            1.20.3
+            1.20.4
+            1.20.5
+            1.20.6
+            1.21
+            1.21.1
+            1.21.2
+            1.21.3
+            1.21.4
+            1.21.5
+            1.21.6
+            1.21.7
+            1.21.8
+          channel: release
+          featured: true
+          files: |
+            build/libs/OneBot-${{ needs.build.outputs.short_version }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ Modrinth 发布完成通知
+        if: success()
+        run: |
+          echo "🎉 Modrinth 发布成功"
+          echo "📦 发布版本: ${{ needs.build.outputs.version }}"
+          echo "🔗 Modrinth 项目页面: https://modrinth.com/plugin/${{ secrets.MODRINTH_PROJECT_ID }}"
+          echo "📥 版本下载: https://modrinth.com/plugin/${{ secrets.MODRINTH_PROJECT_ID }}/version/${{ needs.build.outputs.short_version }}"
 
   release:
     name: 🎉 创建 GitHub Release
@@ -244,19 +383,19 @@ jobs:
     permissions:
       contents: write
       packages: write
-      
+
     steps:
       - name: 📥 检出代码仓库
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: 📥 获取用户版构建产物
         uses: actions/download-artifact@v4
         with:
           name: release-artifacts-${{ github.sha }}
           path: build/libs/
-          
+
       - name: 📝 生成更新日志
         id: changelog
         run: |
@@ -269,23 +408,23 @@ jobs:
           if [ -n "$LATEST_TAG" ]; then
             echo "### 自 ${LATEST_TAG} 以来的变更：" >> CHANGELOG.md
             echo "" >> CHANGELOG.md
-            
+          
             # 按类型分组提交记录
             echo "#### ✨ 新功能" >> CHANGELOG.md
             FEAT_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || echo "")
             echo "${FEAT_COMMITS:-  - 暂无新功能}" >> CHANGELOG.md
             echo -e "\n" >> CHANGELOG.md
-            
+          
             echo "#### 🐛 修复" >> CHANGELOG.md
             FIX_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || echo "")
             echo "${FIX_COMMITS:-  - 暂无修复}" >> CHANGELOG.md
             echo -e "\n" >> CHANGELOG.md
-            
+          
             echo "#### 📚 文档" >> CHANGELOG.md
             DOCS_COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || echo "")
             echo "${DOCS_COMMITS:-  - 暂无文档更新}" >> CHANGELOG.md
             echo -e "\n" >> CHANGELOG.md
-            
+          
             echo "#### 🔧 其他变更" >> CHANGELOG.md
             git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --grep -v "^feat\|^fix\|^docs" | head -20 >> CHANGELOG.md
             echo -e "\n" >> CHANGELOG.md
@@ -322,7 +461,7 @@ jobs:
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           cat CHANGELOG.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          
+
       - name: 🚀 发布新版本
         uses: softprops/action-gh-release@v2
         with:
@@ -418,7 +557,7 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: ✅ 发布完成通知
         if: success()
         run: |
