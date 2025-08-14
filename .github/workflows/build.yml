@@ -303,7 +303,7 @@ jobs:
         uses: cloudnode-pro/modrinth-publish@v2
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
-          project: onebot
+          project: ay8Rdsj0
           version: ${{ needs.build.outputs.short_version }}
           name: OneBot ${{ needs.build.outputs.version }}
           changelog: ${{ steps.changelog.outputs.changelog }}
